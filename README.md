@@ -19,4 +19,4 @@ CREATE TABLE t_user (
 ![](https://raw.githubusercontent.com/xanarry/DatabaseDocGenerater/master/doc.png)
 
 
-如果需要直接解析mysql DDL, 请实现DatabaseOpt借口, 解析后返回制定的数据结构即可
+如果需要直接解析mysql DDL, 请实现DatabaseOpt接口, 解析后返回制定的数据结构即可
