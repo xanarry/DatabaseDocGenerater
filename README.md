@@ -15,6 +15,7 @@ CREATE TABLE t_user (
 ```
 
 将会生成如下文档:
+
 ![](https://raw.githubusercontent.com/xanarry/DatabaseDocGenerater/master/doc.png)
 
 
