@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xanarry.database.dao.DatabaseDao">
+
+    <select id="getDatabaseList" resultType="java.lang.String">
+        select schema_name from information_schema.schemata
+    </select>
+
+    <select id="getTableList"  resultType="com.xanarry.database.domain.Table">
+        SELECT `TABLE_NAME` AS name, `TABLE_COMMENT` AS comment FROM INFORMATION_SCHEMA.TABLES  WHERE TABLE_SCHEMA = #{dbName};
+    </select>
+
+
+    <select id="getFieldList"  resultType="com.xanarry.database.domain.Field">
+        Select
+        `COLUMN_NAME` as `fieldName`,
+        upper(`COLUMN_TYPE`) as `type`,
+        `COLUMN_KEY` as `isKey`,
+        `IS_NULLABLE` as `nullable`,
+        `COLUMN_COMMENT` as `comment`
+        from INFORMATION_SCHEMA.COLUMNS WHERE `table_schema` = #{dbName} AND `TABLE_NAME` = #{tableName}
+    </select>
+
+</mapper>
