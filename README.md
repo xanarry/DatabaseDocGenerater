@@ -13,4 +13,8 @@ CREATE TABLE t_user (
   `phone`          VARCHAR(25) COMMENT '电话'
 )DEFAULT charset = "utf8" ENGINE = InnoDB COMMENT='系统中的用户表';
 ```
+
 将会生成如下文档:
+![avatar](http://baidu.com/pic/doge.png)
+
+如果需要直接解析mysql DDL, 请实现DatabaseOpt借口, 解析后返回制定的数据结构即可
