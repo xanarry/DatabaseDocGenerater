@@ -15,6 +15,7 @@ CREATE TABLE t_user (
 ```
 
 将会生成如下文档:
-![avatar](http://baidu.com/pic/doge.png)
+![](https://raw.githubusercontent.com/xanarry/DatabaseDocGenerater/master/doc.png)
+
 
 如果需要直接解析mysql DDL, 请实现DatabaseOpt借口, 解析后返回制定的数据结构即可
