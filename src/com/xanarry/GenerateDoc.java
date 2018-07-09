@@ -76,7 +76,7 @@ public class GenerateDoc {
         tableCells.get(0).setText("字段名");
         tableCells.get(1).setText("类型");
         tableCells.get(2).setText("是否主键");
-        tableCells.get(3).setText("是否必填");
+        tableCells.get(3).setText("可否为空");
         tableCells.get(4).setText("备注");
     }
 
