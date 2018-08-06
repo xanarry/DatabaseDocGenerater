@@ -4,9 +4,7 @@ package com.xanarry;
 import com.xanarry.database.domain.Field;
 import com.xanarry.database.domain.Table;
 import org.apache.poi.xwpf.usermodel.*;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTbl;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGrid;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTTblGridCol;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -19,7 +17,7 @@ public class GenerateDoc {
         //创建新的word
         XWPFDocument doc = new XWPFDocument();
         for (Table t : tableList) {
-            insertItem(doc, t);
+            insertTableToDoc(doc, t);
         }
 
         try {
@@ -36,7 +34,7 @@ public class GenerateDoc {
         }
     }
 
-    private static void insertItem(XWPFDocument doc, Table table) {
+    private static void insertTableToDoc(XWPFDocument doc, Table table) {
         //创建段落
         XWPFParagraph p1 = doc.createParagraph();
 
@@ -46,38 +44,62 @@ public class GenerateDoc {
         run.addBreak();
         run.setText(String.format("%s(%s)", table.getName(), table.getComment()));
         //插入字段
-        insertCells(doc, table.getFieldList());
+        insertTableContent(doc, table);
     }
 
-    private static void insertCells(XWPFDocument doc, List<Field> fieldList) {
-        //创建有5列的表格
-        XWPFTable table = doc.createTable(fieldList.size() + 1, 5);
+    private static void insertTableContent(XWPFDocument doc, Table dbtable) {
+        List<Field> fieldList = dbtable.getFieldList();
+        //创建有5列的表格, 加三行是一行为表名, 一行为表功能,一行为表头, 后面才是实际内容
+        XWPFTable table = doc.createTable(fieldList.size() + 3, 5);
         //设置表格宽度
         setW(table, 5);
         //插入表头
-        insertHeader(table);
+        insertHeader(table, dbtable.getName(), dbtable.getComment());
 
         //表字段数据插入
         for (int i = 0; i < fieldList.size(); i++) {
-            List<XWPFTableCell> tableCells = table.getRow(i + 1).getTableCells();
+            List<XWPFTableCell> tableCells = table.getRow(i + 3).getTableCells();
             Field field = fieldList.get(i);
             tableCells.get(0).setText(field.getFieldName());
             tableCells.get(1).setText(field.getType());
             tableCells.get(2).setText(field.getIsKey());
-            tableCells.get(3).setText(field.getNullable());
+            tableCells.get(3).setText(field.getNullable().toLowerCase().equals("yes") ? "" : "NOT NULL");
             tableCells.get(4).setText(field.getComment());
         }
     }
 
 
 
-    private static void insertHeader(XWPFTable table) {
-        List<XWPFTableCell> tableCells = table.getRow(0).getTableCells();
-        tableCells.get(0).setText("字段名");
-        tableCells.get(1).setText("类型");
-        tableCells.get(2).setText("是否主键");
-        tableCells.get(3).setText("可否为空");
-        tableCells.get(4).setText("备注");
+    private static void insertHeader(XWPFTable table, String dbTableName, String dbTableComment) {
+        List<XWPFTableCell> tableName = table.getRow(0).getTableCells();
+        tableName.get(0).setText("表名");
+        //将第一列到第四列合并
+        for (int i = 1; i <= 4; i++) {
+            if (i == 1)
+                tableName.get(i).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+            else
+                tableName.get(i).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+        }
+        tableName.get(1).setText(dbTableName);
+
+        List<XWPFTableCell> tableFunction = table.getRow(1).getTableCells();
+        tableFunction.get(0).setText("功能");
+        for (int i = 1; i <= 4; i++) {
+            if (i == 1)
+                tableFunction.get(i).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+            else
+                tableFunction.get(i).getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+        }
+        tableFunction.get(1).setText(dbTableComment);
+
+
+        //设置表头
+        List<XWPFTableCell> tableHeads = table.getRow(2).getTableCells();
+        tableHeads.get(0).setText("字段名");
+        tableHeads.get(1).setText("类型");
+        tableHeads.get(2).setText("是否主键");
+        tableHeads.get(3).setText("约束");
+        tableHeads.get(4).setText("备注");
     }
 
     private static void setW(XWPFTable table, int colNum) {
@@ -90,7 +112,4 @@ public class GenerateDoc {
         }
         table.setCellMargins(20, 20, 20, 20);
     }
-
-
-
 }
